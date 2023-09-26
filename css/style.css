@@ -6,7 +6,7 @@ h1 {
     color:rgb(0, 0, 0);
     margin-left: auto;
     margin-right: auto;
-    font-size: 40px;
+    font-size: px;
     text-align: center;
 }
 
@@ -100,10 +100,11 @@ ul li a:hover {
   /* Style the header */
   header {
     background-color: #666;
-    padding: 5px;
+    padding: 10px;
     text-align: center;
     font-size: 35px;
     color: white;
+    
   }
   
   /* Create two columns/boxes that floats next to each other */
@@ -158,6 +159,7 @@ ul li a:hover {
 
 h2{
     color:white;
+    font-size: 50px !important;
 }
 
 h3{
@@ -202,4 +204,9 @@ header{
   font-size: 35px;
   color: white;
   height: 200px !important;
+}
+
+#txt{
+  text-align: left;
+  font-size: 10px;
 }

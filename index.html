@@ -7,18 +7,18 @@
     <link href="css/style.css" rel="stylesheet" type="text/css">
 </head>
 
-<body>
+<body onload="startTime()">
 <div>
 <div>
     
     <header>
       
+<div id="txt"></div>
         <h2>Home</h2>
         <li id="main"><a href="index.html"> Home</li>
         <li id="main"><a href="Htlm-Css.html"> Vakken</li>
         <li id="main"><a href="Contact.html"> contact</li>
         <li id="main"><a href="overmij.html"> over Mij</li>
-          <li id="main"><a href="klok.html"> klok</li>
         
     </header>
   
@@ -36,6 +36,23 @@
   <p>footer</p>
 </footer>
 </div>
+<script>
+  function startTime() {
+    const today = new Date();
+    let h = today.getHours();
+    let m = today.getMinutes();
+    let s = today.getSeconds();
+    m = checkTime(m);
+    s = checkTime(s);
+    document.getElementById('txt').innerHTML =  h + ":" + m + ":" + s;
+    setTimeout(startTime, 1000);
+  }
+  
+  function checkTime(i) {
+    if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
+    return i;
+  }
+  </script>
     
 </body>
 </html>
