@@ -10,15 +10,41 @@
 <body>
 
     
-    <header>
-        <h2>Vakken</h2>
-        <li id="main"><a href="index.html"> Home</li>
-        <li id="main"><a href="Htlm-Css.html"> Vakken</li>
-        <li id="main"><a href="Contact.html"> contact</li>
-    </header>
+    <div>
+        <style>
+        </style>
+        <header id="Home">
+          <ul>
+            <li>
+              <a href="index.html">Home</a>
+              <a href="Htlm-Css.html">Vakken</a>
+              <a href="over-mij.html">Over mij</a>
+              <a href="Contact.html"> Contact</a>
+            </li>
+          </ul>
+        </header>
     
 <section>
-    <nav>
+
+      
+      <div id="main">
+        <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; open</span>
+      </div>
+      
+      <script>
+      function openNav() {
+        document.getElementById("mySidenav").style.width = "250px";
+        document.getElementById("main").style.marginLeft = "250px";
+      }
+      
+      function closeNav() {
+        document.getElementById("mySidenav").style.width = "0";
+        document.getElementById("main").style.marginLeft= "0";
+      }
+      </script>
+    <nav id="nav2">
+    <div id="mySidenav" class="sidenav">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
         <li><a href="Htlm-Css.html">htlm css</a></li>
         <li><a href="javascript.html">javascript</a></li>
         <li><a href="SLB.html">slb</a></li>
@@ -34,16 +60,22 @@
         <li><a href="rekenen.html">rekenen</a></li>
         <li><a href="zake.html">zakelijke communicatie</a></li>
         <li><a href="git.html">git</a></li>
+      </div>
     </nav>
       
-    <article>
-        <h1>SLB</h1>
+    <article id="article2">
+      <h1>slb</h1>
+      <p>ook geen idea waarvoor dit is 
+      </p>
+      <p>de docent: meneer RIETM</p>
+      <p>wat ik van dit vak vind: Ok </p>
+      <p>rating: 6/10</p>
     </article>
 </section>
     
 <footer>
-    <p>Footer</p>
-</footer>
+    <h2 id="CR">GVO corperation ©</h2>
+    </footer>
     
 </body>
 </html>

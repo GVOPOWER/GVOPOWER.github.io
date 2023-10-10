@@ -1,6 +1,11 @@
 @charset "UTF-8";
 /* CSS Document */
 
+p{
+  color:rgb(0, 0, 0);
+  font-size: 20px;
+  text-align: center;
+}
 
 h1 {
     color:rgb(0, 0, 0);
@@ -8,12 +13,13 @@ h1 {
     margin-right: auto;
     font-size: 40px;
     text-align: center;
+    margin-top: -75px;
 }
 
 
 
 a{
-    color:orange;
+    color:rgb(0, 0, 0);
     font-size: 24px;
     text-decoration: none;
 }
@@ -34,7 +40,7 @@ img{
 }
 
 body{
-    background-color: rgb(183, 202, 178);
+    background-color: rgb(255, 255, 255);
     margin: 0;
     padding: 0;
     width: 100%;
@@ -59,8 +65,10 @@ ul{
 
 ul li{
     display: inline-block;
-    margin-left: 0px;
-    margin-top: -15%;
+    margin-left: 300px;   
+    margin-top: -15px;
+    position: absolute;
+    
 
 }
 
@@ -68,12 +76,13 @@ ul li a {
     color: rgb(255, 255, 255);
     font-size: 24px;
     text-decoration: none;
-    padding-left: 8px;
+    padding-left: 5px;
     padding-top: 3px;
     padding-bottom: 3px;
-    padding-right: 8px;
-    background-color: rgb(58, 107, 82);
+    padding-right: 3px;
+    background-color: rgb(49, 49, 49);
     border-radius: 50px;
+    outline: auto;
     
 }
 
@@ -86,7 +95,7 @@ h4{
 
 ul li a:hover {
     color:rgb(191, 191, 191);
-    background-color: rgb(40, 66, 53) ;
+    background-color: rgb(0, 70, 156) ;
     
 }
 * {
@@ -102,7 +111,7 @@ ul li a:hover {
     background-color: #666;
     padding: 5px;
     text-align: center;
-    font-size: 35px;
+    font-size: 15px;
     color: white;
   }
   
@@ -110,8 +119,8 @@ ul li a:hover {
   nav {
     float: left;
     width: 30%;
-    height: 475px; /* only for demonstration, should be removed */
-    background: #ccc;
+    height: 629.5px; /* only for demonstration, should be removed */
+    background: #ffffff;
     padding: 20px;
   }
   
@@ -125,8 +134,8 @@ ul li a:hover {
     float: left;
     padding: 20px;
     width: 70%;
-    background-color: #f1f1f1;
-    height: 475px; /* only for demonstration, should be removed */
+    background-color: #ffffff;
+    height: 629.5px; /* only for demonstration, should be removed */
   }
 
   div{
@@ -142,7 +151,7 @@ ul li a:hover {
   
   /* Style the footer */
   footer {
-    background-color: #777;
+    background-color: rgb(15, 15, 15);
     padding: 10px;
     text-align: center;
     color: white;
@@ -171,20 +180,6 @@ h3{
   padding: 0px;
 }
 
-#main{
-  display: inline-block;
-  margin-left: 0px;
-  margin-top: -15%;
-}
-#main{
-  width: 100px;
-  background-color: gray;
-  list-style-type: none;
-  border-radius: 50px;
-}
-#main :hover{
-  color: white;
-}
 
 #body{
   background-color: rgb(183, 202, 178);
@@ -192,14 +187,116 @@ h3{
   padding: 0;
   width: 100%;
   height: 100%;
-
 }
 
-header{
-  background-color: #666;
+#Home{
+  background-color: #151515;
   padding: 5px;
   text-align: center;
   font-size: 35px;
   color: white;
-  height: 200px !important;
+  height: 60px !important;
+}
+
+#CR{
+  color:white;
+  text-align: left;
+  font-size: 15px;
+  margin-top: 10px;
+}
+
+
+#Vakken{
+  list-style-type: none   ;
+  font-size: 25px;
+}
+
+#Vakken li{
+  display: inline-block;
+  margin-left: 400px;   
+  margin-top: -15px;
+  position: absolute;
+  
+
+}
+
+#Vakken li a {
+  color: rgb(255, 255, 255);
+  font-size: 24px;
+  text-decoration: none;
+  padding-left: 5px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  padding-right: 3px;
+  background-color: rgb(0, 106, 163);
+  border-radius: 50px;
+  
+}
+
+#Vakken li a:hover {
+  color:rgb(255, 255, 255);
+  background-color: rgb(255, 255, 255) ;
+  
+}
+
+.sidenav {
+  height: 625px   ;
+  width: 0;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: rgb(39, 39, 39);
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 50px;
+  margin-top: -92.5px;
+  margin-left: -20px;
+}
+
+.sidenav a {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+  transition: 0.3s;
+}
+
+.sidenav a:hover {
+  color: #f1f1f1;
+}
+
+.sidenav .closebtn {
+  position: absolute;
+  top: 0;
+  right: 25px;
+  font-size: 36px;
+  margin-left: 50px;
+}
+
+#main {
+  transition: margin-left .5s;
+  padding: 16px;
+}
+
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
+}
+
+
+#article2 {
+  float: left;
+  padding: 20px;
+  width: 70%;
+  background-color: #ffffff;
+  height: 550.5px; /* only for demonstration, should be removed */
+}
+
+#nav2 {
+  float: left;
+  width: 30%;
+  height: 550.5px; /* only for demonstration, should be removed */
+  background: #ffffff;
+  padding: 20px;
 }
