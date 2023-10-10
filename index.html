@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="css/style.css" rel="stylesheet" type="text/css">
 </head>
+<<<<<<< HEAD
 <body>
   <div>
     <style>
@@ -32,5 +33,55 @@
       <h2 id="CR">GVO corperation ©</h2>
     </footer>
   </div>
+=======
+
+<body onload="startTime()">
+<div>
+<div>
+    
+    <header>
+      
+<div id="txt"></div>
+        <h2>Home</h2>
+        <li id="main"><a href="index.html"> Home</li>
+        <li id="main"><a href="Htlm-Css.html"> Vakken</li>
+        <li id="main"><a href="Contact.html"> contact</li>
+        <li id="main"><a href="overmij.html"> over Mij</li>
+        
+    </header>
+  
+<section>
+  <nav>
+
+  </nav>
+    
+  <article>
+      <h1>Home</h1>
+  </article>
+</section>
+  
+<footer>
+  <p>footer</p>
+</footer>
+</div>
+<script>
+  function startTime() {
+    const today = new Date();
+    let h = today.getHours();
+    let m = today.getMinutes();
+    let s = today.getSeconds();
+    m = checkTime(m);
+    s = checkTime(s);
+    document.getElementById('txt').innerHTML =  h + ":" + m + ":" + s;
+    setTimeout(startTime, 1000);
+  }
+  
+  function checkTime(i) {
+    if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
+    return i;
+  }
+  </script>
+    
+>>>>>>> c33b968b06199d72d795f92a9bc3512ecbbfe337
 </body>
 </html>
