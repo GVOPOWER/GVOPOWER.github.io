@@ -9,7 +9,7 @@ import { ParticipantsSection } from '@/components/ParticipantsSection'
 import { GroupSidebar } from '@/components/GroupSidebar'
 import { LoginSection } from '@/components/LoginSection'
 import { ProfileSection } from '@/components/ProfileSection'
-import { ListChecks, UserCheck, ClipboardText, Envelope, Users, User } from '@phosphor-icons/react'
+import { ListChecks, UserCheck, ClipboardText, Envelope, Users } from '@phosphor-icons/react'
 import type { Group, Invitation, Note, AttendanceDate, ChecklistItem } from '@/types'
 
 function App() {
@@ -18,6 +18,7 @@ function App() {
   const [invitations, setInvitations] = useKV<Invitation[]>('invitations', [])
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState('participants')
+  const [showProfile, setShowProfile] = useState(false)
 
   const selectedGroup = groups?.find(g => g.id === selectedGroupId) || null
 
@@ -51,24 +52,41 @@ function App() {
         currentUser={currentUser}
         groups={groups || []}
         selectedGroupId={selectedGroupId}
-        onSelectGroup={setSelectedGroupId}
+        onSelectGroup={(groupId) => {
+          setSelectedGroupId(groupId)
+          setShowProfile(false)
+          setActiveTab('participants')
+        }}
         onGroupsChange={setGroups}
         onInvitationsChange={setInvitations}
         onLogout={() => {
           setCurrentUser(null)
           setSelectedGroupId(null)
+          setShowProfile(false)
         }}
         onProfileClick={() => {
-          setActiveTab('profile')
-          if (selectedGroupId) {
-            setSelectedGroupId(selectedGroupId)
-          }
+          setShowProfile(true)
+          setSelectedGroupId(null)
         }}
       />
 
       <div className="flex-1 overflow-auto">
         <div className="container max-w-4xl mx-auto py-8 px-4">
-          {!selectedGroupId ? (
+          {showProfile ? (
+            <>
+              <div className="mb-8">
+                <h1 className="text-3xl font-semibold mb-2">Profiel</h1>
+                <p className="text-muted-foreground">Beheer je profiel en uitnodigingen</p>
+              </div>
+              <ProfileSection
+                currentUser={currentUser}
+                invitations={invitations || []}
+                groups={groups || []}
+                onInvitationsChange={setInvitations}
+                onGroupsChange={setGroups}
+              />
+            </>
+          ) : !selectedGroupId ? (
             <div className="text-center py-16">
               <h2 className="text-2xl font-semibold mb-2">Welkom, {currentUser}!</h2>
               <p className="text-muted-foreground">Selecteer of maak een groep in het zijmenu om te beginnen</p>
@@ -81,11 +99,7 @@ function App() {
               </div>
 
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-6 mb-6">
-                  <TabsTrigger value="profile" className="flex items-center gap-2">
-                    <User className="h-4 w-4" />
-                    <span className="hidden sm:inline">Profiel</span>
-                  </TabsTrigger>
+                <TabsList className="grid w-full grid-cols-5 mb-6">
                   <TabsTrigger value="participants" className="flex items-center gap-2">
                     <Users className="h-4 w-4" />
                     <span className="hidden sm:inline">Deelnemers</span>
@@ -112,16 +126,6 @@ function App() {
                     )}
                   </TabsTrigger>
                 </TabsList>
-
-                <TabsContent value="profile" className="mt-0">
-                  <ProfileSection
-                    currentUser={currentUser}
-                    invitations={invitations || []}
-                    groups={groups || []}
-                    onInvitationsChange={setInvitations}
-                    onGroupsChange={setGroups}
-                  />
-                </TabsContent>
 
                 <TabsContent value="participants" className="mt-0">
                   {selectedGroup && (
