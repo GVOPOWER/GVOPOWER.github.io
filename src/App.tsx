@@ -4,12 +4,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ChecklistSection } from '@/components/ChecklistSection'
 import { AttendanceSection } from '@/components/AttendanceSection'
 import { NotesSection } from '@/components/NotesSection'
-import { InvitationsSection } from '@/components/InvitationsSection'
 import { ParticipantsSection } from '@/components/ParticipantsSection'
 import { GroupSidebar } from '@/components/GroupSidebar'
 import { LoginSection } from '@/components/LoginSection'
 import { ProfileSection } from '@/components/ProfileSection'
-import { ListChecks, UserCheck, ClipboardText, Envelope, Users } from '@phosphor-icons/react'
+import { ListChecks, UserCheck, ClipboardText, Users } from '@phosphor-icons/react'
 import type { Group, Invitation, Note, AttendanceDate, ChecklistItem } from '@/types'
 
 function App() {
@@ -36,10 +35,6 @@ function App() {
 
   const filteredAttendanceDates = selectedGroupId && attendanceDates
     ? attendanceDates.filter(date => date.groupId === selectedGroupId)
-    : []
-
-  const userInvitations = currentUser && invitations
-    ? invitations.filter(inv => inv.invitedUser === currentUser && inv.status === 'pending')
     : []
 
   if (!currentUser) {
@@ -99,7 +94,7 @@ function App() {
               </div>
 
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-5 mb-6">
+                <TabsList className="grid w-full grid-cols-4 mb-6">
                   <TabsTrigger value="participants" className="flex items-center gap-2">
                     <Users className="h-4 w-4" />
                     <span className="hidden sm:inline">Deelnemers</span>
@@ -115,15 +110,6 @@ function App() {
                   <TabsTrigger value="notes" className="flex items-center gap-2">
                     <ClipboardText className="h-4 w-4" />
                     <span className="hidden sm:inline">Notities</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="invitations" className="flex items-center gap-2 relative">
-                    <Envelope className="h-4 w-4" />
-                    <span className="hidden sm:inline">Uitnodigingen</span>
-                    {userInvitations.length > 0 && (
-                      <span className="absolute -top-1 -right-1 h-5 w-5 bg-destructive text-destructive-foreground text-xs rounded-full flex items-center justify-center">
-                        {userInvitations.length}
-                      </span>
-                    )}
                   </TabsTrigger>
                 </TabsList>
 
@@ -173,16 +159,6 @@ function App() {
                       setNotes([...otherNotes, ...items])
                     }}
                     groupId={selectedGroupId}
-                  />
-                </TabsContent>
-
-                <TabsContent value="invitations" className="mt-0">
-                  <InvitationsSection 
-                    currentUser={currentUser}
-                    invitations={invitations || []}
-                    groups={groups || []}
-                    onInvitationsChange={setInvitations}
-                    onGroupsChange={setGroups}
                   />
                 </TabsContent>
               </Tabs>

@@ -40,7 +40,7 @@ export function LoginSection({ onLogin }: LoginSectionProps) {
     onLogin(email.toLowerCase())
   }
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (!email.trim() || !password) {
       toast.error('Vul alle velden in')
       return
@@ -58,22 +58,24 @@ export function LoginSection({ onLogin }: LoginSectionProps) {
       return
     }
 
-    setAccounts((current) => ({
+    const newAccount: UserAccount = {
+      email: emailLower,
+      password,
+      createdAt: Date.now()
+    }
+
+    await setAccounts((current) => ({
       ...(current || {}),
-      [emailLower]: {
-        email: emailLower,
-        password,
-        createdAt: Date.now()
-      }
+      [emailLower]: newAccount
     }))
 
     toast.success('Account aangemaakt!')
     onLogin(emailLower)
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (isRegistering) {
-      handleRegister()
+      await handleRegister()
     } else {
       handleLogin()
     }
