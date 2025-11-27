@@ -16,10 +16,10 @@ export function ParticipantsSection({ group, onGroupUpdate }: ParticipantsSectio
   const [newParticipantName, setNewParticipantName] = useState('')
 
   const addParticipant = () => {
-    if (newParticipantName.trim() && !group.participants.includes(newParticipantName.trim())) {
+    if (newParticipantName.trim() && !(group.participants || []).includes(newParticipantName.trim())) {
       onGroupUpdate({
         ...group,
-        participants: [...group.participants, newParticipantName.trim()]
+        participants: [...(group.participants || []), newParticipantName.trim()]
       })
       setNewParticipantName('')
     }
@@ -28,7 +28,7 @@ export function ParticipantsSection({ group, onGroupUpdate }: ParticipantsSectio
   const deleteParticipant = (participantName: string) => {
     onGroupUpdate({
       ...group,
-      participants: group.participants.filter(p => p !== participantName)
+      participants: (group.participants || []).filter(p => p !== participantName)
     })
   }
 
@@ -43,7 +43,7 @@ export function ParticipantsSection({ group, onGroupUpdate }: ParticipantsSectio
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">Deelnemers</h2>
         <Badge variant="outline">
-          {group.participants.length} {group.participants.length === 1 ? 'deelnemer' : 'deelnemers'}
+          {(group.participants || []).length} {(group.participants || []).length === 1 ? 'deelnemer' : 'deelnemers'}
         </Badge>
       </div>
 
@@ -66,7 +66,7 @@ export function ParticipantsSection({ group, onGroupUpdate }: ParticipantsSectio
         </Button>
       </div>
 
-      {group.participants.length === 0 ? (
+      {(group.participants || []).length === 0 ? (
         <Card className="p-8 text-center">
           <div className="flex flex-col items-center gap-2 text-muted-foreground">
             <UsersIcon className="h-12 w-12 opacity-50" />
@@ -77,7 +77,7 @@ export function ParticipantsSection({ group, onGroupUpdate }: ParticipantsSectio
       ) : (
         <ScrollArea className="h-[400px]">
           <div className="space-y-2 pr-4">
-            {group.participants.map((participant) => (
+            {(group.participants || []).map((participant) => (
               <Card key={participant} className="p-3">
                 <div className="flex items-center justify-between gap-3">
                   <span className="flex-1">{participant}</span>

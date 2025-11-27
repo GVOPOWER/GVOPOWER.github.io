@@ -39,7 +39,7 @@ export function GroupSidebar({
   const [inviteUsername, setInviteUsername] = useState('')
 
   const userGroups = groups.filter(g => 
-    g.owner === currentUser || g.members.includes(currentUser)
+    g.owner === currentUser || (g.members || []).includes(currentUser)
   )
 
   const createGroup = () => {
@@ -185,10 +185,10 @@ export function GroupSidebar({
 
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <Badge variant="secondary" className="text-xs">
-                      {group.participants.length} deelnemers
+                      {(group.participants || []).length} deelnemers
                     </Badge>
                     <Badge variant="outline" className="text-xs">
-                      {group.members.length} {group.members.length === 1 ? 'lid' : 'leden'}
+                      {(group.members || []).length} {(group.members || []).length === 1 ? 'lid' : 'leden'}
                     </Badge>
                   </div>
 

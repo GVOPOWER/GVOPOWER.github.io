@@ -26,10 +26,10 @@ export function InvitationsSection({
 
   const acceptInvitation = (invitation: Invitation) => {
     const group = groups.find(g => g.id === invitation.groupId)
-    if (group && !group.members.includes(currentUser)) {
+    if (group && !(group.members || []).includes(currentUser)) {
       onGroupsChange(groups.map(g => 
         g.id === invitation.groupId 
-          ? { ...g, members: [...g.members, currentUser] }
+          ? { ...g, members: [...(g.members || []), currentUser] }
           : g
       ))
     }
