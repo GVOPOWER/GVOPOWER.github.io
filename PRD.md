@@ -1,30 +1,58 @@
 # Planning Guide
 
-A game morning event management tool for schools that helps organizers manage checklists, participant groups, attendance tracking, and event notes through a collaborative multi-user interface with authentication and group-based permissions.
+A game morning event management tool for schools that helps organizers manage checklists, participant groups with roles, date-based attendance tracking, and event notes with file attachments through a collaborative multi-user interface with email/password authentication and group-based permissions.
 
 **Experience Qualities**:
-1. **Collaborative** - Users can create groups, invite others, and manage game morning activities together
-2. **Organized** - Sidebar navigation for groups with clear tab-based sections for different management areas
-3. **Secure** - Login system with group ownership and invitation-based access control
+1. **Secure** - Email/password authentication system with unique username validation prevents duplicate accounts
+2. **Collaborative** - Users can create groups, assign roles to participants, invite others, and manage game morning activities together
+3. **Organized** - Sidebar navigation for groups with clear tab-based sections including dedicated profile page for managing invitations
 
 **Complexity Level**: Light Application (multiple features with basic state)
-  - Multiple interconnected features (login, groups, checklists, attendance, notes, invitations) with user authentication, group permissions, and persistent state across sessions
+  - Multiple interconnected features (email/password authentication, groups, participant roles, checklists, date-based attendance, notes with file attachments, invitations, profile management) with user authentication, group permissions, and persistent state across sessions
 
 ## Essential Features
 
-### User Authentication
-- **Functionality**: Simple username-based login system to identify users
-- **Purpose**: Enable multi-user collaboration and group ownership tracking
+### User Authentication with Email & Password
+- **Functionality**: Secure account creation and login system with email and password validation
+- **Purpose**: Enable multi-user collaboration with secure access control and unique user identification
 - **Trigger**: User visits the app without being logged in
-- **Progression**: Enter username → Click login → Access group management interface
-- **Success criteria**: Username persists between sessions, users can log out and switch accounts
+- **Progression**: Enter email and password → Choose Register or Login → Validate credentials → Access group management interface
+- **Success criteria**: Email addresses are unique (case-insensitive), passwords minimum 6 characters, accounts persist between sessions, users can log out and switch accounts, successful login shows toast notification
+
+### Profile Management Page
+- **Functionality**: Dedicated profile page showing user information, pending invitations with accept/decline actions, and overview of owned and member groups
+- **Purpose**: Centralized location for users to manage their account, invitations, and group memberships
+- **Trigger**: User clicks Profile tab
+- **Progression**: View profile → See pending invitations → Accept/Decline invitations → View owned groups and member groups
+- **Success criteria**: All pending invitations visible, accept/decline actions work immediately, groups categorized by ownership vs membership
 
 ### Group Management (Sidebar)
-- **Functionality**: Create groups, view owned/member groups, invite users, switch between groups
+- **Functionality**: Create groups, view owned/member groups, invite users by email, switch between groups
 - **Purpose**: Organize multiple game morning events and control access to each
 - **Trigger**: User clicks "Groep Maken" button in sidebar
-- **Progression**: Enter group name → Create group → Group appears in sidebar → Click group to select → Invite button → Enter username → Send invitation
-- **Success criteria**: Groups persist, clear visual indication of selected group, owner badge displayed, groups can be deleted by owner
+- **Progression**: Enter group name → Create group → Group appears in sidebar → Click group to select → Invite button → Enter user email → Send invitation
+- **Success criteria**: Groups persist, clear visual indication of selected group, owner badge displayed, groups can be deleted by owner, email-based invitations
+
+### Participant Role Management
+- **Functionality**: Assign roles (Deelnemer, Leider, Organisator) to each participant with visual role indicators
+- **Purpose**: Define participant responsibilities and organize group hierarchy
+- **Trigger**: User adds participant or clicks role dropdown
+- **Progression**: Add participant → Select role from dropdown → Role icon and label displayed → Change role as needed
+- **Success criteria**: Three role types available, role changes persist, visual indicators (icons and colors) clearly distinguish roles
+
+### Date-based Attendance Tracking
+- **Functionality**: Create multiple attendance dates and mark participant presence/absence per specific date
+- **Purpose**: Track attendance across multiple game morning sessions with historical records
+- **Trigger**: User adds date in attendance tab
+- **Progression**: Select date → Add date → Date appears in list → Select date → Mark participants present/absent → Attendance saved for that specific date
+- **Success criteria**: Multiple dates can be created, each date has independent attendance records, dates are selectable, attendance persists per date, visual summary shows present/total counts
+
+### Notes with File Attachments
+- **Functionality**: Add timestamped notes with optional file attachments (max 5MB per file)
+- **Purpose**: Document observations with supporting files like photos, documents, or reports
+- **Trigger**: User clicks "Bestand Toevoegen" or "Notitie Toevoegen"
+- **Progression**: Enter note text → Optionally select files → Files shown with name and size → Submit note → Note appears with attachments → Click attachment to download
+- **Success criteria**: Files under 5MB accepted, multiple files per note supported, file metadata (name, size) displayed, files downloadable, notes with only attachments (no text) allowed
 
 ### Invitation System
 - **Functionality**: Send and receive group invitations, accept or decline access requests

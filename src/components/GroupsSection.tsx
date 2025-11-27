@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { Plus, Trash, Users } from '@phosphor-icons/react'
-import type { Group } from '@/types'
+import type { Group, Participant } from '@/types'
 
 type GroupsSectionProps = {
   groups: Group[]
@@ -37,19 +37,24 @@ export function GroupsSection({ groups, onGroupsChange }: GroupsSectionProps) {
   const addParticipant = (groupId: string) => {
     const name = newParticipantName[groupId]?.trim()
     if (name) {
+      const newParticipant: Participant = {
+        id: Date.now().toString(),
+        name,
+        role: 'participant'
+      }
       onGroupsChange(groups.map(group =>
         group.id === groupId
-          ? { ...group, participants: [...group.participants, name] }
+          ? { ...group, participants: [...group.participants, newParticipant] }
           : group
       ))
       setNewParticipantName({ ...newParticipantName, [groupId]: '' })
     }
   }
 
-  const deleteParticipant = (groupId: string, participantIndex: number) => {
+  const deleteParticipant = (groupId: string, participantId: string) => {
     onGroupsChange(groups.map(group =>
       group.id === groupId
-        ? { ...group, participants: group.participants.filter((_, i) => i !== participantIndex) }
+        ? { ...group, participants: group.participants.filter(p => p.id !== participantId) }
         : group
     ))
   }
@@ -136,13 +141,13 @@ export function GroupsSection({ groups, onGroupsChange }: GroupsSectionProps) {
 
                     {group.participants.length > 0 && (
                       <div className="space-y-1">
-                        {group.participants.map((participant, index) => (
-                          <div key={index} className="flex items-center justify-between py-1 px-2 rounded hover:bg-muted">
-                            <span className="text-sm">{participant}</span>
+                        {group.participants.map((participant) => (
+                          <div key={participant.id} className="flex items-center justify-between py-1 px-2 rounded hover:bg-muted">
+                            <span className="text-sm">{participant.name}</span>
                             <Button
                               variant="ghost"
                               size="icon"
-                              onClick={() => deleteParticipant(group.id, index)}
+                              onClick={() => deleteParticipant(group.id, participant.id)}
                               className="h-6 w-6 text-muted-foreground hover:text-destructive"
                             >
                               <Trash className="h-3 w-3" />

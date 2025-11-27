@@ -8,25 +8,15 @@ import { InvitationsSection } from '@/components/InvitationsSection'
 import { ParticipantsSection } from '@/components/ParticipantsSection'
 import { GroupSidebar } from '@/components/GroupSidebar'
 import { LoginSection } from '@/components/LoginSection'
-import { ListChecks, UserCheck, ClipboardText, Envelope, Users } from '@phosphor-icons/react'
-import type { Group, Invitation } from '@/types'
+import { ProfileSection } from '@/components/ProfileSection'
+import { ListChecks, UserCheck, ClipboardText, Envelope, Users, User } from '@phosphor-icons/react'
+import type { Group, Invitation, Note, AttendanceDate } from '@/types'
 
 type ChecklistItem = {
   id: string
   text: string
   completed: boolean
   groupId: string
-}
-
-type Note = {
-  id: string
-  text: string
-  timestamp: number
-  groupId: string
-}
-
-type AttendanceRecord = {
-  [participantName: string]: boolean
 }
 
 function App() {
@@ -38,7 +28,7 @@ function App() {
   const selectedGroup = groups?.find(g => g.id === selectedGroupId) || null
 
   const [checklistItems, setChecklistItems] = useKV<ChecklistItem[]>('checklist-items', [])
-  const [attendance, setAttendance] = useKV<AttendanceRecord>('attendance', {})
+  const [attendanceDates, setAttendanceDates] = useKV<AttendanceDate[]>('attendance-dates', [])
   const [notes, setNotes] = useKV<Note[]>('notes', [])
 
   const filteredChecklistItems = selectedGroupId && checklistItems
@@ -47,6 +37,10 @@ function App() {
 
   const filteredNotes = selectedGroupId && notes
     ? notes.filter(note => note.groupId === selectedGroupId)
+    : []
+
+  const filteredAttendanceDates = selectedGroupId && attendanceDates
+    ? attendanceDates.filter(date => date.groupId === selectedGroupId)
     : []
 
   const userInvitations = currentUser && invitations
@@ -87,7 +81,11 @@ function App() {
               </div>
 
               <Tabs defaultValue="participants" className="w-full">
-                <TabsList className="grid w-full grid-cols-5 mb-6">
+                <TabsList className="grid w-full grid-cols-6 mb-6">
+                  <TabsTrigger value="profile" className="flex items-center gap-2">
+                    <User className="h-4 w-4" />
+                    <span className="hidden sm:inline">Profiel</span>
+                  </TabsTrigger>
                   <TabsTrigger value="participants" className="flex items-center gap-2">
                     <Users className="h-4 w-4" />
                     <span className="hidden sm:inline">Deelnemers</span>
@@ -114,6 +112,16 @@ function App() {
                     )}
                   </TabsTrigger>
                 </TabsList>
+
+                <TabsContent value="profile" className="mt-0">
+                  <ProfileSection
+                    currentUser={currentUser}
+                    invitations={invitations || []}
+                    groups={groups || []}
+                    onInvitationsChange={setInvitations}
+                    onGroupsChange={setGroups}
+                  />
+                </TabsContent>
 
                 <TabsContent value="participants" className="mt-0">
                   {selectedGroup && (
@@ -143,9 +151,12 @@ function App() {
 
                 <TabsContent value="attendance" className="mt-0">
                   <AttendanceSection 
-                    groups={selectedGroup ? [selectedGroup] : []} 
-                    attendance={attendance || {}} 
-                    onAttendanceChange={setAttendance} 
+                    groups={selectedGroup ? [selectedGroup] : []}
+                    attendanceDates={filteredAttendanceDates}
+                    onAttendanceDatesChange={(dates) => {
+                      const otherDates = (attendanceDates || []).filter(date => date.groupId !== selectedGroupId)
+                      setAttendanceDates([...otherDates, ...dates])
+                    }}
                   />
                 </TabsContent>
 

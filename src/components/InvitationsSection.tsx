@@ -3,14 +3,15 @@ import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Envelope, Check, X } from '@phosphor-icons/react'
+import { toast } from 'sonner'
 import type { Group, Invitation } from '@/types'
 
 type InvitationsSectionProps = {
   currentUser: string
   invitations: Invitation[]
   groups: Group[]
-  onInvitationsChange: (invitations: Invitation[]) => void
-  onGroupsChange: (groups: Group[]) => void
+  onInvitationsChange: (updater: (invitations: Invitation[]) => Invitation[]) => void
+  onGroupsChange: (updater: (groups: Group[]) => Group[]) => void
 }
 
 export function InvitationsSection({ 
@@ -27,26 +28,30 @@ export function InvitationsSection({
   const acceptInvitation = (invitation: Invitation) => {
     const group = groups.find(g => g.id === invitation.groupId)
     if (group && !(group.members || []).includes(currentUser)) {
-      onGroupsChange(groups.map(g => 
+      onGroupsChange((current) => current.map(g => 
         g.id === invitation.groupId 
           ? { ...g, members: [...(g.members || []), currentUser] }
           : g
       ))
     }
 
-    onInvitationsChange(invitations.map(inv =>
+    onInvitationsChange((current) => current.map(inv =>
       inv.id === invitation.id
-        ? { ...inv, status: 'accepted' }
+        ? { ...inv, status: 'accepted' as const }
         : inv
     ))
+
+    toast.success(`Je bent nu lid van ${invitation.groupName}`)
   }
 
   const declineInvitation = (invitationId: string) => {
-    onInvitationsChange(invitations.map(inv =>
+    onInvitationsChange((current) => current.map(inv =>
       inv.id === invitationId
-        ? { ...inv, status: 'declined' }
+        ? { ...inv, status: 'declined' as const }
         : inv
     ))
+
+    toast.success('Uitnodiging geweigerd')
   }
 
   const formatTimestamp = (timestamp: number) => {

@@ -36,7 +36,7 @@ export function GroupSidebar({
 }: GroupSidebarProps) {
   const [newGroupName, setNewGroupName] = useState('')
   const [showInviteInput, setShowInviteInput] = useState<string | null>(null)
-  const [inviteUsername, setInviteUsername] = useState('')
+  const [inviteEmail, setInviteEmail] = useState('')
 
   const userGroups = groups.filter(g => 
     g.owner === currentUser || (g.members || []).includes(currentUser)
@@ -65,8 +65,8 @@ export function GroupSidebar({
   }
 
   const inviteUser = (groupId: string) => {
-    const username = inviteUsername.trim()
-    if (username && username !== currentUser) {
+    const email = inviteEmail.trim().toLowerCase()
+    if (email && email !== currentUser) {
       const group = groups.find(g => g.id === groupId)
       if (group) {
         onInvitationsChange((currentInvitations) => [
@@ -76,12 +76,12 @@ export function GroupSidebar({
             groupId: group.id,
             groupName: group.name,
             invitedBy: currentUser,
-            invitedUser: username,
+            invitedUser: email,
             status: 'pending',
             timestamp: Date.now()
           }
         ])
-        setInviteUsername('')
+        setInviteEmail('')
         setShowInviteInput(null)
       }
     }
@@ -105,19 +105,19 @@ export function GroupSidebar({
     <div className="w-80 border-r border-border bg-card flex flex-col h-screen">
       <div className="p-4 border-b border-border">
         <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
               <span className="text-sm font-medium text-primary">
                 {currentUser.charAt(0).toUpperCase()}
               </span>
             </div>
-            <span className="font-medium">{currentUser}</span>
+            <span className="font-medium truncate text-sm">{currentUser}</span>
           </div>
           <Button
             variant="ghost"
             size="icon"
             onClick={onLogout}
-            className="h-8 w-8 text-muted-foreground hover:text-destructive"
+            className="h-8 w-8 text-muted-foreground hover:text-destructive flex-shrink-0"
           >
             <SignOut className="h-4 w-4" />
           </Button>
@@ -196,9 +196,10 @@ export function GroupSidebar({
                     <div className="flex gap-1 mt-2" onClick={(e) => e.stopPropagation()}>
                       <Input
                         id={`invite-${group.id}`}
-                        placeholder="Gebruikersnaam..."
-                        value={inviteUsername}
-                        onChange={(e) => setInviteUsername(e.target.value)}
+                        type="email"
+                        placeholder="Email adres..."
+                        value={inviteEmail}
+                        onChange={(e) => setInviteEmail(e.target.value)}
                         onKeyPress={(e) => handleInviteKeyPress(e, group.id)}
                         className="h-7 text-xs"
                         autoFocus
