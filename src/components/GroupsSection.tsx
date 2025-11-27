@@ -6,12 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { Plus, Trash, Users } from '@phosphor-icons/react'
-
-export type Group = {
-  id: string
-  name: string
-  participants: string[]
-}
+import type { Group } from '@/types'
 
 type GroupsSectionProps = {
   groups: Group[]
@@ -24,7 +19,13 @@ export function GroupsSection({ groups, onGroupsChange }: GroupsSectionProps) {
 
   const addGroup = () => {
     if (newGroupName.trim()) {
-      onGroupsChange([...groups, { id: Date.now().toString(), name: newGroupName.trim(), participants: [] }])
+      onGroupsChange([...groups, { 
+        id: Date.now().toString(), 
+        name: newGroupName.trim(), 
+        participants: [],
+        owner: 'legacy',
+        members: ['legacy']
+      }])
       setNewGroupName('')
     }
   }

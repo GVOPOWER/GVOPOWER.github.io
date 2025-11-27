@@ -2,8 +2,8 @@ import { Card } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { UserCheck, Check, X } from '@phosphor-icons/react'
-import type { Group } from './GroupsSection'
+import { UserCheck, Check } from '@phosphor-icons/react'
+import type { Group } from '@/types'
 
 type AttendanceRecord = {
   [participantName: string]: boolean

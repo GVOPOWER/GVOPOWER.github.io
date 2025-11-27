@@ -9,19 +9,21 @@ type Note = {
   id: string
   text: string
   timestamp: number
+  groupId: string
 }
 
 type NotesSectionProps = {
   notes: Note[]
   onNotesChange: (notes: Note[]) => void
+  groupId: string
 }
 
-export function NotesSection({ notes, onNotesChange }: NotesSectionProps) {
+export function NotesSection({ notes, onNotesChange, groupId }: NotesSectionProps) {
   const [newNoteText, setNewNoteText] = useState('')
 
   const addNote = () => {
     if (newNoteText.trim()) {
-      onNotesChange([{ id: Date.now().toString(), text: newNoteText.trim(), timestamp: Date.now() }, ...notes])
+      onNotesChange([{ id: Date.now().toString(), text: newNoteText.trim(), timestamp: Date.now(), groupId }, ...notes])
       setNewNoteText('')
     }
   }

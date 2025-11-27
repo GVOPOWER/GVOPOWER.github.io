@@ -10,19 +10,21 @@ type ChecklistItem = {
   id: string
   text: string
   completed: boolean
+  groupId: string
 }
 
 type ChecklistSectionProps = {
   items: ChecklistItem[]
   onItemsChange: (items: ChecklistItem[]) => void
+  groupId: string
 }
 
-export function ChecklistSection({ items, onItemsChange }: ChecklistSectionProps) {
+export function ChecklistSection({ items, onItemsChange, groupId }: ChecklistSectionProps) {
   const [newItemText, setNewItemText] = useState('')
 
   const addItem = () => {
     if (newItemText.trim()) {
-      onItemsChange([...items, { id: Date.now().toString(), text: newItemText.trim(), completed: false }])
+      onItemsChange([...items, { id: Date.now().toString(), text: newItemText.trim(), completed: false, groupId }])
       setNewItemText('')
     }
   }
