@@ -1,11 +1,14 @@
+import { useState, useRef } from 'react'
+import { useKV } from '@github/spark/hooks'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
-import { User, Envelope, Check, X, Calendar } from '@phosphor-icons/react'
+import { User, Envelope, Check, X, Calendar, Camera, Pencil } from '@phosphor-icons/react'
 import { toast } from 'sonner'
-import type { Invitation, Group } from '@/types'
+import type { Invitation, Group, UserProfile } from '@/types'
 
 type ProfileSectionProps = {
   currentUser: string
@@ -22,6 +25,16 @@ export function ProfileSection({
   onInvitationsChange,
   onGroupsChange
 }: ProfileSectionProps) {
+  const [profiles, setProfiles] = useKV<Record<string, UserProfile>>('user-profiles', {})
+  const [isEditingName, setIsEditingName] = useState(false)
+  const [newDisplayName, setNewDisplayName] = useState('')
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const userProfile = (profiles || {})[currentUser] || {
+    email: currentUser,
+    displayName: currentUser
+  }
+
   const userInvitations = invitations.filter(
     inv => inv.invitedUser === currentUser && inv.status === 'pending'
   )
@@ -34,6 +47,54 @@ export function ProfileSection({
   const userMemberGroups = groups.filter(g => 
     g.owner !== currentUser && (g.members || []).includes(currentUser)
   )
+
+  const handleDisplayNameChange = () => {
+    if (!newDisplayName.trim()) {
+      toast.error('Vul een naam in')
+      return
+    }
+
+    setProfiles((current) => ({
+      ...(current || {}),
+      [currentUser]: {
+        ...userProfile,
+        displayName: newDisplayName.trim()
+      }
+    }))
+
+    setIsEditingName(false)
+    setNewDisplayName('')
+    toast.success('Naam bijgewerkt')
+  }
+
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Selecteer een afbeelding')
+      return
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Afbeelding moet kleiner dan 5MB zijn')
+      return
+    }
+
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result as string
+      setProfiles((current) => ({
+        ...(current || {}),
+        [currentUser]: {
+          ...userProfile,
+          profilePhoto: dataUrl
+        }
+      }))
+      toast.success('Profielfoto bijgewerkt')
+    }
+    reader.readAsDataURL(file)
+  }
 
   const handleAccept = (invitation: Invitation) => {
     onInvitationsChange((current) =>
@@ -76,12 +137,68 @@ export function ProfileSection({
     <div className="space-y-6">
       <Card className="p-6">
         <div className="flex items-center gap-4">
-          <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
-            <User className="h-8 w-8 text-primary" />
+          <div className="relative group">
+            {userProfile.profilePhoto ? (
+              <img
+                src={userProfile.profilePhoto}
+                alt="Profile"
+                className="h-16 w-16 rounded-full object-cover"
+              />
+            ) : (
+              <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
+                <User className="h-8 w-8 text-primary" />
+              </div>
+            )}
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="absolute inset-0 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+            >
+              <Camera className="h-6 w-6 text-white" />
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handlePhotoUpload}
+              className="hidden"
+            />
           </div>
           <div className="flex-1">
-            <h2 className="text-2xl font-semibold">{currentUser}</h2>
-            <p className="text-sm text-muted-foreground">Je profiel en uitnodigingen</p>
+            {isEditingName ? (
+              <div className="flex gap-2 items-center">
+                <Input
+                  id="display-name"
+                  value={newDisplayName}
+                  onChange={(e) => setNewDisplayName(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleDisplayNameChange()}
+                  placeholder="Nieuwe naam"
+                  className="max-w-xs"
+                  autoFocus
+                />
+                <Button onClick={handleDisplayNameChange} size="sm">
+                  <Check className="h-4 w-4" />
+                </Button>
+                <Button onClick={() => setIsEditingName(false)} variant="ghost" size="sm">
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <h2 className="text-2xl font-semibold">{userProfile.displayName}</h2>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    setNewDisplayName(userProfile.displayName)
+                    setIsEditingName(true)
+                  }}
+                  className="h-6 w-6"
+                >
+                  <Pencil className="h-3 w-3" />
+                </Button>
+              </div>
+            )}
+            <p className="text-sm text-muted-foreground">{currentUser}</p>
           </div>
         </div>
       </Card>

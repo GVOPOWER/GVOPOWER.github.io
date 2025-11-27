@@ -1,19 +1,22 @@
 import { useState } from 'react'
+import { useKV } from '@github/spark/hooks'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'
+import { GroupSettings } from '@/components/GroupSettings'
 import { 
   Plus, 
   SignOut, 
   Users, 
   UserPlus, 
   Trash,
-  Crown
+  Crown,
+  Gear
 } from '@phosphor-icons/react'
-import type { Group, Invitation } from '@/types'
+import type { Group, Invitation, UserProfile } from '@/types'
 
 type GroupSidebarProps = {
   currentUser: string
@@ -23,6 +26,7 @@ type GroupSidebarProps = {
   onGroupsChange: (groups: Group[]) => void
   onInvitationsChange: (updater: (invitations: Invitation[]) => Invitation[]) => void
   onLogout: () => void
+  onProfileClick: () => void
 }
 
 export function GroupSidebar({
@@ -32,15 +36,25 @@ export function GroupSidebar({
   onSelectGroup,
   onGroupsChange,
   onInvitationsChange,
-  onLogout
+  onLogout,
+  onProfileClick
 }: GroupSidebarProps) {
+  const [profiles] = useKV<Record<string, UserProfile>>('user-profiles', {})
   const [newGroupName, setNewGroupName] = useState('')
   const [showInviteInput, setShowInviteInput] = useState<string | null>(null)
   const [inviteEmail, setInviteEmail] = useState('')
+  const [settingsGroupId, setSettingsGroupId] = useState<string | null>(null)
+
+  const userProfile = (profiles || {})[currentUser] || {
+    email: currentUser,
+    displayName: currentUser
+  }
 
   const userGroups = groups.filter(g => 
     g.owner === currentUser || (g.members || []).includes(currentUser)
   )
+
+  const settingsGroup = groups.find(g => g.id === settingsGroupId)
 
   const createGroup = () => {
     if (newGroupName.trim()) {
@@ -105,14 +119,25 @@ export function GroupSidebar({
     <div className="w-80 border-r border-border bg-card flex flex-col h-screen">
       <div className="p-4 border-b border-border">
         <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2 min-w-0 flex-1">
-            <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-              <span className="text-sm font-medium text-primary">
-                {currentUser.charAt(0).toUpperCase()}
-              </span>
-            </div>
-            <span className="font-medium truncate text-sm">{currentUser}</span>
-          </div>
+          <button
+            onClick={onProfileClick}
+            className="flex items-center gap-2 min-w-0 flex-1 hover:opacity-80 transition-opacity"
+          >
+            {userProfile.profilePhoto ? (
+              <img
+                src={userProfile.profilePhoto}
+                alt="Profile"
+                className="h-8 w-8 rounded-full object-cover flex-shrink-0"
+              />
+            ) : (
+              <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <span className="text-sm font-medium text-primary">
+                  {userProfile.displayName.charAt(0).toUpperCase()}
+                </span>
+              </div>
+            )}
+            <span className="font-medium truncate text-sm">{userProfile.displayName}</span>
+          </button>
           <Button
             variant="ghost"
             size="icon"
@@ -168,19 +193,34 @@ export function GroupSidebar({
                         <Crown className="h-3 w-3 text-accent flex-shrink-0" />
                       )}
                     </div>
-                    {isOwner(group) && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          deleteGroup(group.id)
-                        }}
-                        className="h-6 w-6 text-destructive hover:text-destructive hover:bg-destructive/10"
-                      >
-                        <Trash className="h-3 w-3" />
-                      </Button>
-                    )}
+                    <div className="flex items-center gap-1">
+                      {isOwner(group) && (
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setSettingsGroupId(group.id)
+                            }}
+                            className="h-6 w-6 text-muted-foreground hover:text-foreground"
+                          >
+                            <Gear className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              deleteGroup(group.id)
+                            }}
+                            className="h-6 w-6 text-destructive hover:text-destructive hover:bg-destructive/10"
+                          >
+                            <Trash className="h-3 w-3" />
+                          </Button>
+                        </>
+                      )}
+                    </div>
                   </div>
 
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -234,6 +274,19 @@ export function GroupSidebar({
           )}
         </div>
       </ScrollArea>
+
+      {settingsGroup && (
+        <GroupSettings
+          open={settingsGroupId !== null}
+          onOpenChange={(open) => !open && setSettingsGroupId(null)}
+          group={settingsGroup}
+          currentUser={currentUser}
+          onGroupUpdate={(updatedGroup) => {
+            onGroupsChange(groups.map(g => g.id === updatedGroup.id ? updatedGroup : g))
+          }}
+          onInvitationsChange={onInvitationsChange}
+        />
+      )}
     </div>
   )
 }

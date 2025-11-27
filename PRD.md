@@ -1,44 +1,51 @@
 # Planning Guide
 
-A game morning event management tool for schools that helps organizers manage checklists, participant groups with roles, date-based attendance tracking, and event notes with file attachments through a collaborative multi-user interface with email/password authentication and group-based permissions.
+A game morning event management tool for schools that helps organizers manage checklists with executor tracking, participant groups with custom roles, date-based attendance tracking, and event notes with file attachments through a collaborative multi-user interface with email/password authentication, user profiles with photos, and group-based permissions.
 
 **Experience Qualities**:
-1. **Secure** - Email/password authentication system with unique username validation prevents duplicate accounts
-2. **Collaborative** - Users can create groups, assign roles to participants, invite others, and manage game morning activities together
-3. **Organized** - Sidebar navigation for groups with clear tab-based sections including dedicated profile page for managing invitations
+1. **Secure** - Email/password authentication system with unique username validation prevents duplicate accounts, persistent login state across sessions
+2. **Collaborative** - Users can create groups, assign roles to participants, create custom roles, invite others, track task executors, and manage game morning activities together
+3. **Organized** - Sidebar navigation with profile photo for groups with clear tab-based sections including dedicated profile page for managing invitations and personal settings
 
 **Complexity Level**: Light Application (multiple features with basic state)
-  - Multiple interconnected features (email/password authentication, groups, participant roles, checklists, date-based attendance, notes with file attachments, invitations, profile management) with user authentication, group permissions, and persistent state across sessions
+  - Multiple interconnected features (email/password authentication with persistent login, groups with settings dialog, participant custom roles, checklists with executor tracking, date-based attendance, notes with file attachments, invitations, profile management with photo upload, display name editing) with user authentication, group permissions, and persistent state across sessions
 
 ## Essential Features
 
 ### User Authentication with Email & Password
-- **Functionality**: Secure account creation and login system with email and password validation
-- **Purpose**: Enable multi-user collaboration with secure access control and unique user identification
+- **Functionality**: Secure account creation and login system with email and password validation, persistent login state
+- **Purpose**: Enable multi-user collaboration with secure access control and unique user identification that survives page refreshes
 - **Trigger**: User visits the app without being logged in
-- **Progression**: Enter email and password → Choose Register or Login → Validate credentials → Access group management interface
-- **Success criteria**: Email addresses are unique (case-insensitive), passwords minimum 6 characters, accounts persist between sessions, users can log out and switch accounts, successful login shows toast notification
+- **Progression**: Enter email and password → Choose Register or Login → Validate credentials → Access group management interface → Login state persists on refresh
+- **Success criteria**: Email addresses are unique (case-insensitive), passwords minimum 6 characters, accounts persist between sessions, login state persists on page refresh, users can log out and switch accounts, successful login shows toast notification
 
-### Profile Management Page
-- **Functionality**: Dedicated profile page showing user information, pending invitations with accept/decline actions, and overview of owned and member groups
-- **Purpose**: Centralized location for users to manage their account, invitations, and group memberships
-- **Trigger**: User clicks Profile tab
-- **Progression**: View profile → See pending invitations → Accept/Decline invitations → View owned groups and member groups
-- **Success criteria**: All pending invitations visible, accept/decline actions work immediately, groups categorized by ownership vs membership
+### Profile Management Page with Photo & Display Name
+- **Functionality**: Dedicated profile page showing user profile photo, editable display name, email, pending invitations with accept/decline actions, and overview of owned and member groups
+- **Purpose**: Centralized location for users to manage their identity, invitations, and group memberships
+- **Trigger**: User clicks Profile tab or clicks their profile photo in sidebar
+- **Progression**: View profile → Upload profile photo (max 5MB) → Edit display name → See pending invitations → Accept/Decline invitations → View owned groups and member groups
+- **Success criteria**: Profile photo upload works with image files under 5MB, photo displays in sidebar and profile page, display name can be edited inline, all pending invitations visible, accept/decline actions work immediately, groups categorized by ownership vs membership
 
-### Group Management (Sidebar)
-- **Functionality**: Create groups, view owned/member groups, invite users by email, switch between groups
-- **Purpose**: Organize multiple game morning events and control access to each
-- **Trigger**: User clicks "Groep Maken" button in sidebar
-- **Progression**: Enter group name → Create group → Group appears in sidebar → Click group to select → Invite button → Enter user email → Send invitation
-- **Success criteria**: Groups persist, clear visual indication of selected group, owner badge displayed, groups can be deleted by owner, email-based invitations
+### Group Management with Settings Dialog
+- **Functionality**: Create groups, access group settings via gear icon, view owned/member groups, invite users by email, manage members, create custom roles, switch between groups
+- **Purpose**: Organize multiple game morning events and control access, roles, and members for each group
+- **Trigger**: User clicks "Groep Maken" button in sidebar or gear icon on existing group
+- **Progression**: Enter group name → Create group → Group appears in sidebar → Click gear icon → Open settings dialog → Invite users → Add/remove members → Create custom roles with colors → Manage group
+- **Success criteria**: Groups persist, settings dialog accessible via gear icon for owners only, clear visual indication of selected group, owner badge displayed, groups can be deleted by owner, email-based invitations, member management in settings, custom roles with color pickers
 
-### Participant Role Management
-- **Functionality**: Assign roles (Deelnemer, Leider, Organisator) to each participant with visual role indicators
-- **Purpose**: Define participant responsibilities and organize group hierarchy
-- **Trigger**: User adds participant or clicks role dropdown
-- **Progression**: Add participant → Select role from dropdown → Role icon and label displayed → Change role as needed
-- **Success criteria**: Three role types available, role changes persist, visual indicators (icons and colors) clearly distinguish roles
+### Participant Role Management with Custom Roles
+- **Functionality**: Assign standard roles (Deelnemer, Leider, Organisator) and custom roles to each participant with visual role indicators including colored badges
+- **Purpose**: Define participant responsibilities with flexible custom roles beyond the standard hierarchy
+- **Trigger**: User adds participant or selects role dropdown
+- **Progression**: Create custom role in group settings → Add participant → Select standard role → Optionally select custom role → Both role types displayed with visual indicators → Change roles as needed
+- **Success criteria**: Three standard role types available, unlimited custom roles can be created with names and colors, custom roles displayed as colored badges, role changes persist, visual indicators (icons, colors, badges) clearly distinguish roles
+
+### Checklist with Executor Tracking
+- **Functionality**: Create, complete, and delete preparation tasks per group, assign multiple executors to each task from group members
+- **Purpose**: Track necessary preparations and accountability by recording who executed each task
+- **Trigger**: User selects a group and clicks "Add Item" in checklist tab or executor icon on task
+- **Progression**: Select group → Click add → Enter task text → Press enter → Item appears → Click executor icon → Select members who executed it → Multiple executors shown as badges → Check to complete → Delete to remove
+- **Success criteria**: Tasks are group-specific, multiple executors can be assigned per task, executors displayed as badges below task, executor assignment persists, completed items visually distinct
 
 ### Date-based Attendance Tracking
 - **Functionality**: Create multiple attendance dates and mark participant presence/absence per specific date
@@ -62,11 +69,11 @@ A game morning event management tool for schools that helps organizers manage ch
 - **Success criteria**: Invitation count badge visible, invitations persist, accepted invitations add user to group members, declined invitations are marked
 
 ### Checklist Management
-- **Functionality**: Create, complete, and delete preparation tasks per group
-- **Purpose**: Track necessary preparations before and during the event for each specific group
+- **Functionality**: Create, complete, and delete preparation tasks per group with executor tracking
+- **Purpose**: Track necessary preparations before and during the event for each specific group with accountability
 - **Trigger**: User selects a group and clicks "Add Item" in checklist tab
-- **Progression**: Select group → Click add → Enter task text → Press enter → Item appears → Check to complete → Delete to remove
-- **Success criteria**: Tasks are group-specific, persist between sessions, completed items visually distinct
+- **Progression**: Select group → Click add → Enter task text → Press enter → Item appears → Assign executors → Check to complete → Delete to remove
+- **Success criteria**: Tasks are group-specific, executors can be assigned, persist between sessions, completed items visually distinct
 
 ### Attendance Tracking
 - **Functionality**: Mark participants as present or absent with visual indicators
@@ -91,7 +98,7 @@ A game morning event management tool for schools that helps organizers manage ch
 - **Invalid Invitations**: Prevent self-invitations, allow duplicate invitations (user can receive multiple invites to same group)
 - **Group Deletion**: When owner deletes group, automatically deselect if currently selected
 - **Data Isolation**: All checklists and notes are scoped to specific groups, users only see data for groups they're members of
-- **Persistent Sessions**: User login state, group memberships, and all data automatically save using useKV
+- **Persistent Sessions**: User login state, profile data, group memberships, and all data automatically save using useKV and persist across page refreshes
 
 ## Design Direction
 
@@ -161,10 +168,10 @@ Purposeful animations that provide immediate feedback for collaborative actions 
   - Tabs: notification badge for pending invitations
   
 - **Icon Selection**: 
-  - User (login/profile), SignOut (logout), Crown (group owner)
-  - Plus (create/add), Trash (delete), UserPlus (invite)
+  - User (login/profile), SignOut (logout), Crown (group owner), Camera (photo upload), Pencil (edit name)
+  - Plus (create/add), Trash (delete), UserPlus (invite), Gear (group settings), UserCheck (executor assignment)
   - ListChecks (checklist), UserCheck (attendance), ClipboardText (notes), Envelope (invitations)
-  - Check (accept), X (decline)
+  - Check (accept), X (decline/remove)
   
 - **Spacing**: 
   - Sidebar: p-4 sections, gap-2 for group cards

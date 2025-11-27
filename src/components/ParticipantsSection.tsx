@@ -42,7 +42,25 @@ export function ParticipantsSection({ group, onGroupUpdate }: ParticipantsSectio
     onGroupUpdate({
       ...group,
       participants: (group.participants || []).map(p => 
-        p.id === participantId ? { ...p, role } : p
+        p.id === participantId ? { ...p, role, customRoleId: undefined } : p
+      )
+    })
+  }
+
+  const updateParticipantCustomRole = (participantId: string, customRoleId: string) => {
+    onGroupUpdate({
+      ...group,
+      participants: (group.participants || []).map(p => 
+        p.id === participantId ? { ...p, customRoleId } : p
+      )
+    })
+  }
+
+  const clearCustomRole = (participantId: string) => {
+    onGroupUpdate({
+      ...group,
+      participants: (group.participants || []).map(p => 
+        p.id === participantId ? { ...p, customRoleId: undefined } : p
       )
     })
   }
@@ -73,6 +91,11 @@ export function ParticipantsSection({ group, onGroupUpdate }: ParticipantsSectio
       default:
         return 'Deelnemer'
     }
+  }
+
+  const getCustomRole = (participant: Participant) => {
+    if (!participant.customRoleId) return null
+    return (group.customRoles || []).find(r => r.id === participant.customRoleId)
   }
 
   return (
@@ -114,12 +137,26 @@ export function ParticipantsSection({ group, onGroupUpdate }: ParticipantsSectio
       ) : (
         <ScrollArea className="h-[400px]">
           <div className="space-y-2 pr-4">
-            {(group.participants || []).map((participant) => (
+            {(group.participants || []).map((participant) => {
+              const customRole = getCustomRole(participant)
+              return (
               <Card key={participant.id} className="p-3">
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-2 flex-1">
                     {getRoleIcon(participant.role)}
                     <span className="font-medium">{participant.name}</span>
+                    {customRole && (
+                      <Badge 
+                        variant="outline" 
+                        className="text-xs"
+                        style={{ 
+                          borderColor: customRole.color,
+                          color: customRole.color
+                        }}
+                      >
+                        {customRole.name}
+                      </Badge>
+                    )}
                   </div>
                   
                   <Select
@@ -136,6 +173,35 @@ export function ParticipantsSection({ group, onGroupUpdate }: ParticipantsSectio
                     </SelectContent>
                   </Select>
 
+                  {(group.customRoles || []).length > 0 && (
+                    <Select
+                      value={participant.customRoleId || 'none'}
+                      onValueChange={(value) => 
+                        value === 'none' 
+                          ? clearCustomRole(participant.id)
+                          : updateParticipantCustomRole(participant.id, value)
+                      }
+                    >
+                      <SelectTrigger className="w-[140px]">
+                        <SelectValue placeholder="Extra rol" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">Geen</SelectItem>
+                        {(group.customRoles || []).map((role) => (
+                          <SelectItem key={role.id} value={role.id}>
+                            <div className="flex items-center gap-2">
+                              <div 
+                                className="h-3 w-3 rounded-full" 
+                                style={{ backgroundColor: role.color }}
+                              />
+                              {role.name}
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+
                   <Button
                     variant="ghost"
                     size="icon"
@@ -146,7 +212,8 @@ export function ParticipantsSection({ group, onGroupUpdate }: ParticipantsSectio
                   </Button>
                 </div>
               </Card>
-            ))}
+            )})}
+
           </div>
         </ScrollArea>
       )}

@@ -4,27 +4,30 @@ import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Card } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Plus, Trash } from '@phosphor-icons/react'
-
-type ChecklistItem = {
-  id: string
-  text: string
-  completed: boolean
-  groupId: string
-}
+import { Badge } from '@/components/ui/badge'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Plus, Trash, UserCheck } from '@phosphor-icons/react'
+import type { ChecklistItem, Group } from '@/types'
 
 type ChecklistSectionProps = {
   items: ChecklistItem[]
   onItemsChange: (items: ChecklistItem[]) => void
   groupId: string
+  group: Group | null
 }
 
-export function ChecklistSection({ items, onItemsChange, groupId }: ChecklistSectionProps) {
+export function ChecklistSection({ items, onItemsChange, groupId, group }: ChecklistSectionProps) {
   const [newItemText, setNewItemText] = useState('')
 
   const addItem = () => {
     if (newItemText.trim()) {
-      onItemsChange([...items, { id: Date.now().toString(), text: newItemText.trim(), completed: false, groupId }])
+      onItemsChange([...items, { 
+        id: Date.now().toString(), 
+        text: newItemText.trim(), 
+        completed: false, 
+        groupId,
+        executedBy: []
+      }])
       setNewItemText('')
     }
   }
@@ -35,6 +38,22 @@ export function ChecklistSection({ items, onItemsChange, groupId }: ChecklistSec
 
   const deleteItem = (id: string) => {
     onItemsChange(items.filter(item => item.id !== id))
+  }
+
+  const toggleExecutor = (itemId: string, memberEmail: string) => {
+    onItemsChange(items.map(item => {
+      if (item.id !== itemId) return item
+      
+      const executedBy = item.executedBy || []
+      const isExecutor = executedBy.includes(memberEmail)
+      
+      return {
+        ...item,
+        executedBy: isExecutor
+          ? executedBy.filter(e => e !== memberEmail)
+          : [...executedBy, memberEmail]
+      }
+    }))
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -72,26 +91,68 @@ export function ChecklistSection({ items, onItemsChange, groupId }: ChecklistSec
           <div className="space-y-2 pr-4">
             {items.map((item) => (
               <Card key={item.id} className="p-3">
-                <div className="flex items-center gap-3">
-                  <Checkbox
-                    id={`checklist-${item.id}`}
-                    checked={item.completed}
-                    onCheckedChange={() => toggleItem(item.id)}
-                  />
-                  <label
-                    htmlFor={`checklist-${item.id}`}
-                    className={`flex-1 cursor-pointer ${item.completed ? 'line-through text-muted-foreground' : ''}`}
-                  >
-                    {item.text}
-                  </label>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => deleteItem(item.id)}
-                    className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-                  >
-                    <Trash className="h-4 w-4" />
-                  </Button>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3">
+                    <Checkbox
+                      id={`checklist-${item.id}`}
+                      checked={item.completed}
+                      onCheckedChange={() => toggleItem(item.id)}
+                    />
+                    <label
+                      htmlFor={`checklist-${item.id}`}
+                      className={`flex-1 cursor-pointer ${item.completed ? 'line-through text-muted-foreground' : ''}`}
+                    >
+                      {item.text}
+                    </label>
+                    {group && group.members && group.members.length > 0 && (
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <UserCheck className="h-4 w-4" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-64" align="end">
+                          <div className="space-y-2">
+                            <h4 className="font-medium text-sm">Uitgevoerd door</h4>
+                            <div className="space-y-1">
+                              {group.members.map((member) => (
+                                <div key={member} className="flex items-center gap-2">
+                                  <Checkbox
+                                    id={`executor-${item.id}-${member}`}
+                                    checked={(item.executedBy || []).includes(member)}
+                                    onCheckedChange={() => toggleExecutor(item.id, member)}
+                                  />
+                                  <label
+                                    htmlFor={`executor-${item.id}-${member}`}
+                                    className="text-sm cursor-pointer flex-1"
+                                  >
+                                    {member}
+                                  </label>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => deleteItem(item.id)}
+                      className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                    >
+                      <Trash className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  {item.executedBy && item.executedBy.length > 0 && (
+                    <div className="flex flex-wrap gap-1 ml-9">
+                      {item.executedBy.map((executor) => (
+                        <Badge key={executor} variant="secondary" className="text-xs">
+                          {executor}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </Card>
             ))}

@@ -10,20 +10,14 @@ import { GroupSidebar } from '@/components/GroupSidebar'
 import { LoginSection } from '@/components/LoginSection'
 import { ProfileSection } from '@/components/ProfileSection'
 import { ListChecks, UserCheck, ClipboardText, Envelope, Users, User } from '@phosphor-icons/react'
-import type { Group, Invitation, Note, AttendanceDate } from '@/types'
-
-type ChecklistItem = {
-  id: string
-  text: string
-  completed: boolean
-  groupId: string
-}
+import type { Group, Invitation, Note, AttendanceDate, ChecklistItem } from '@/types'
 
 function App() {
   const [currentUser, setCurrentUser] = useKV<string | null>('current-user', null)
   const [groups, setGroups] = useKV<Group[]>('groups', [])
   const [invitations, setInvitations] = useKV<Invitation[]>('invitations', [])
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null)
+  const [activeTab, setActiveTab] = useState('participants')
 
   const selectedGroup = groups?.find(g => g.id === selectedGroupId) || null
 
@@ -64,6 +58,12 @@ function App() {
           setCurrentUser(null)
           setSelectedGroupId(null)
         }}
+        onProfileClick={() => {
+          setActiveTab('profile')
+          if (selectedGroupId) {
+            setSelectedGroupId(selectedGroupId)
+          }
+        }}
       />
 
       <div className="flex-1 overflow-auto">
@@ -80,7 +80,7 @@ function App() {
                 <p className="text-muted-foreground">Beheer je game ochtend met checklists, presentie en notities</p>
               </div>
 
-              <Tabs defaultValue="participants" className="w-full">
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <TabsList className="grid w-full grid-cols-6 mb-6">
                   <TabsTrigger value="profile" className="flex items-center gap-2">
                     <User className="h-4 w-4" />
@@ -146,6 +146,7 @@ function App() {
                       setChecklistItems([...otherItems, ...items])
                     }}
                     groupId={selectedGroupId}
+                    group={selectedGroup}
                   />
                 </TabsContent>
 
