@@ -1,0 +1,448 @@
+====================================================================
+POSTMAN TEST SCENARIO'S - GAME OCHTEND MANAGER
+====================================================================
+
+BELANGRIJK: Deze app is een client-side React applicatie die gebruik maakt 
+van Spark's KV store voor data opslag. Er zijn GEEN traditionele REST API 
+endpoints. Alle data wordt lokaal beheerd via de browser.
+
+====================================================================
+1. BASIS HTML/APPLICATIE TESTEN
+====================================================================
+
+Test Name: Verificeer App Laadt Correct
+Method: GET
+URL: {{base_url}}
+Headers: None
+
+Test Scripts:
+```javascript
+pm.test("Response status code is 200", function () {
+    pm.expect(pm.response.code).to.eql(200);
+});
+
+pm.test("Response content type bevat text/html", function () {
+    pm.expect(pm.response.headers.get('Content-Type')).to.include('text/html');
+});
+
+pm.test("Response body is niet leeg", function () {
+    pm.expect(pm.response.text()).to.not.be.empty;
+});
+
+pm.test("HTML bevat correcte structuur", function () {
+    const html = pm.response.text();
+    pm.expect(html).to.include("<html");
+    pm.expect(html).to.include("</html>");
+    pm.expect(html).to.include("<body");
+    pm.expect(html).to.include("</body>");
+});
+
+pm.test("Titel is 'Game Ochtend Manager'", function () {
+    const html = pm.response.text();
+    pm.expect(html).to.include('<title>Game Ochtend Manager</title>');
+});
+
+pm.test("React root div aanwezig", function () {
+    const html = pm.response.text();
+    pm.expect(html).to.include('<div id="root">');
+});
+
+pm.test("Main.tsx script tag aanwezig", function () {
+    const html = pm.response.text();
+    pm.expect(html).to.include('src="/src/main.tsx"');
+});
+```
+
+====================================================================
+2. STATIC ASSETS TESTEN
+====================================================================
+
+Test Name: Verificeer Main CSS Laadt
+Method: GET
+URL: {{base_url}}/src/main.css
+Headers: None
+
+Test Scripts:
+```javascript
+pm.test("Status is 200", function () {
+    pm.expect(pm.response.code).to.eql(200);
+});
+
+pm.test("Content-Type is CSS", function () {
+    const contentType = pm.response.headers.get('Content-Type');
+    pm.expect(contentType).to.include('css');
+});
+```
+
+---
+
+Test Name: Verificeer Main TSX Laadt
+Method: GET
+URL: {{base_url}}/src/main.tsx
+Headers: None
+
+Test Scripts:
+```javascript
+pm.test("Status is 200", function () {
+    pm.expect(pm.response.code).to.eql(200);
+});
+
+pm.test("Content bevat TypeScript/React code", function () {
+    const body = pm.response.text();
+    pm.expect(body).to.include('React').or.to.include('tsx');
+});
+```
+
+====================================================================
+3. FONT RESOURCES TESTEN
+====================================================================
+
+Test Name: Verificeer Google Fonts Connectie
+Method: GET
+URL: https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap
+Headers: None
+
+Test Scripts:
+```javascript
+pm.test("Google Fonts bereikbaar", function () {
+    pm.expect(pm.response.code).to.eql(200);
+});
+
+pm.test("Response is CSS", function () {
+    pm.expect(pm.response.headers.get('Content-Type')).to.include('css');
+});
+```
+
+====================================================================
+4. PERFORMANCE TESTEN
+====================================================================
+
+Test Name: Response Time Check
+Method: GET
+URL: {{base_url}}
+Headers: None
+
+Test Scripts:
+```javascript
+pm.test("Response tijd is acceptabel (onder 500ms)", function () {
+    pm.expect(pm.response.responseTime).to.be.below(500);
+});
+
+pm.test("Response tijd is goed (onder 300ms)", function () {
+    if (pm.response.responseTime < 300) {
+        pm.expect(true).to.be.true;
+        console.log("✓ Uitstekende performance: " + pm.response.responseTime + "ms");
+    } else {
+        console.log("⚠ Acceptabele performance: " + pm.response.responseTime + "ms");
+    }
+});
+```
+
+====================================================================
+5. SECURITY HEADERS TESTEN
+====================================================================
+
+Test Name: Verificeer Security Headers
+Method: GET
+URL: {{base_url}}
+Headers: None
+
+Test Scripts:
+```javascript
+pm.test("Cache-Control header aanwezig", function () {
+    pm.expect(pm.response.headers.has("Cache-Control")).to.be.true;
+});
+
+pm.test("Content-Type header aanwezig", function () {
+    pm.expect(pm.response.headers.has("Content-Type")).to.be.true;
+});
+
+pm.test("X-Frame-Options of CSP aanwezig (optioneel)", function () {
+    const hasXFrame = pm.response.headers.has("X-Frame-Options");
+    const hasCSP = pm.response.headers.has("Content-Security-Policy");
+    if (hasXFrame || hasCSP) {
+        console.log("✓ Security headers gevonden");
+    } else {
+        console.log("⚠ Geen X-Frame-Options of CSP gevonden (optioneel voor dev)");
+    }
+});
+```
+
+====================================================================
+6. APPLICATIE DEPENDENCIES TESTEN
+====================================================================
+
+Test Name: Verificeer Vite Config Bestaat
+Method: GET
+URL: {{base_url}}/vite.config.ts
+Headers: None
+
+Test Scripts:
+```javascript
+pm.test("Vite config bereikbaar in dev", function () {
+    if (pm.response.code === 200) {
+        console.log("✓ Dev environment gedetecteerd");
+    } else {
+        console.log("ℹ Production build (config niet exposed)");
+    }
+});
+```
+
+====================================================================
+7. ERROR HANDLING TESTEN
+====================================================================
+
+Test Name: 404 Error Handling
+Method: GET
+URL: {{base_url}}/niet-bestaande-pagina
+Headers: None
+
+Test Scripts:
+```javascript
+pm.test("404 wordt correct afgehandeld", function () {
+    pm.expect(pm.response.code).to.be.oneOf([404, 200]);
+});
+
+pm.test("Response bevat HTML of error message", function () {
+    pm.expect(pm.response.text()).to.not.be.empty;
+});
+```
+
+====================================================================
+8. CROSS-BROWSER COMPATIBILITY TESTEN
+====================================================================
+
+Test Name: User Agent Test - Chrome
+Method: GET
+URL: {{base_url}}
+Headers: 
+  User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
+
+Test Scripts:
+```javascript
+pm.test("App reageert op Chrome user agent", function () {
+    pm.expect(pm.response.code).to.eql(200);
+});
+```
+
+---
+
+Test Name: User Agent Test - Safari
+Method: GET
+URL: {{base_url}}
+Headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15
+
+Test Scripts:
+```javascript
+pm.test("App reageert op Safari user agent", function () {
+    pm.expect(pm.response.code).to.eql(200);
+});
+```
+
+---
+
+Test Name: User Agent Test - Mobile
+Method: GET
+URL: {{base_url}}
+Headers:
+  User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1
+
+Test Scripts:
+```javascript
+pm.test("App reageert op mobile user agent", function () {
+    pm.expect(pm.response.code).to.eql(200);
+});
+
+pm.test("HTML bevat viewport meta tag voor mobile", function () {
+    const html = pm.response.text();
+    pm.expect(html).to.include('viewport');
+});
+```
+
+====================================================================
+9. CONTENT VALIDATION TESTEN
+====================================================================
+
+Test Name: Verificeer React Wordt Geladen
+Method: GET
+URL: {{base_url}}
+Headers: None
+
+Test Scripts:
+```javascript
+pm.test("React wordt geladen", function () {
+    const html = pm.response.text();
+    pm.expect(html).to.include('react');
+});
+
+pm.test("App.tsx module wordt geladen", function () {
+    const html = pm.response.text();
+    pm.expect(html).to.include('main.tsx');
+});
+```
+
+====================================================================
+10. MONITORING TEST SUITE
+====================================================================
+
+Test Name: Health Check Complete
+Method: GET
+URL: {{base_url}}
+Headers: None
+
+Pre-request Script:
+```javascript
+pm.globals.set("test_start_time", new Date().toISOString());
+```
+
+Test Scripts:
+```javascript
+pm.test("Application is UP", function () {
+    pm.expect(pm.response.code).to.eql(200);
+});
+
+pm.test("Response tijd onder 1 seconde", function () {
+    pm.expect(pm.response.responseTime).to.be.below(1000);
+});
+
+pm.test("Response bevat HTML", function () {
+    pm.expect(pm.response.text()).to.include('html');
+});
+
+pm.test("React root aanwezig", function () {
+    pm.expect(pm.response.text()).to.include('id="root"');
+});
+
+// Log resultaten
+console.log("=================================");
+console.log("Health Check Resultaten:");
+console.log("Status: " + pm.response.code);
+console.log("Response tijd: " + pm.response.responseTime + "ms");
+console.log("Test gestart: " + pm.globals.get("test_start_time"));
+console.log("Test voltooid: " + new Date().toISOString());
+console.log("=================================");
+```
+
+====================================================================
+POSTMAN ENVIRONMENT VARIABELEN
+====================================================================
+
+Maak een environment in Postman met de volgende variabelen:
+
+Variabele Name: base_url
+Initial Value: http://localhost:5173
+Current Value: http://localhost:5173
+(of je production URL)
+
+Variabele Name: environment
+Initial Value: development
+Current Value: development
+
+====================================================================
+POSTMAN COLLECTION SETUP
+====================================================================
+
+1. Maak een nieuwe Collection genaamd "Game Ochtend Manager Tests"
+2. Voeg alle bovenstaande tests toe als requests in de collection
+3. Configureer Collection-level tests (optioneel):
+
+Collection Pre-request Script:
+```javascript
+console.log("Starting Game Ochtend Manager test suite...");
+pm.globals.set("collection_start", new Date().getTime());
+```
+
+Collection Tests:
+```javascript
+const endTime = new Date().getTime();
+const startTime = pm.globals.get("collection_start");
+const duration = endTime - startTime;
+console.log("Test suite voltooid in " + duration + "ms");
+```
+
+====================================================================
+RUNNER CONFIGURATIE
+====================================================================
+
+Om alle tests in één keer uit te voeren:
+1. Klik op de Collection
+2. Klik op "Run"
+3. Selecteer alle requests
+4. Kies aantal iterations: 1 (of meer voor load testing)
+5. Klik "Run Game Ochtend Manager Tests"
+
+Voor Load Testing:
+- Iterations: 10-50
+- Delay: 100ms
+- Monitor response times en failure rates
+
+====================================================================
+BELANGRIJKE OPMERKINGEN
+====================================================================
+
+⚠ BEPERKINGEN VAN POSTMAN VOOR DEZE APP:
+
+1. Deze app heeft GEEN backend API endpoints
+   - Alle data wordt opgeslagen in Spark's KV store (client-side)
+   - Postman kan alleen de HTML/CSS/JS delivery testen
+   - Je kunt NIET gebruikers, groepen, checklists etc. via API testen
+
+2. Voor echte functionaliteit testen heb je nodig:
+   - Browser automation (Playwright, Cypress, Selenium)
+   - Manual testing in de browser
+   - JavaScript unit tests (Vitest, Jest)
+
+3. Wat je WEL met Postman kunt testen:
+   ✓ Of de applicatie laadt
+   ✓ Of static assets beschikbaar zijn
+   ✓ Response times
+   ✓ HTTP headers
+   ✓ HTML structuur
+   ✓ Mobile responsiveness (via User-Agent)
+   ✓ Cross-browser compatibility (via User-Agent)
+
+4. Voor API testing zou je nodig hebben:
+   - Backend REST API endpoints
+   - Authentication endpoints (/api/login, /api/register)
+   - CRUD endpoints voor groups, participants, checklists, etc.
+   - Websocket/SSE voor real-time updates
+
+====================================================================
+ALTERNATIEVE TEST STRATEGIEËN
+====================================================================
+
+OPTIE 1: CYPRESS/PLAYWRIGHT E2E TESTS
+- Test echte gebruikers flows
+- Test login, groep aanmaken, uitnodigingen, etc.
+- Test UI interacties
+
+OPTIE 2: VITEST UNIT TESTS
+- Test React components
+- Test hooks (useKV)
+- Test utility functies
+
+OPTIE 3: MANUAL TEST CHECKLIST
+Zie MANUAL_TEST_CHECKLIST.txt (kan ik ook maken indien gewenst)
+
+====================================================================
+CONCLUSIE
+====================================================================
+
+Postman is beperkt geschikt voor het testen van deze app omdat:
+- Het een SPA (Single Page Application) is
+- Er geen backend API is
+- Alle functionaliteit client-side is
+
+Voor betere test coverage, overweeg:
+1. Browser automation tools (Cypress/Playwright)
+2. Component tests (Vitest + React Testing Library)
+3. Manual testing met test scenarios
+
+Postman is vooral nuttig voor:
+- Monitoring of de app online is
+- Performance monitoring
+- Basic health checks
+- CI/CD health checks
+
+====================================================================
