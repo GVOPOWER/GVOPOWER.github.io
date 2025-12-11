@@ -1,0 +1,174 @@
+POSTMAN TEST SCENARIOS VOOR GAME OCHTEND MANAGER
+=================================================
+
+BELANGRIJK: Deze app is een client-side React applicatie zonder backend API endpoints.
+Alle data wordt opgeslagen in browser localStorage via de Spark KV API.
+Traditionele API testing met Postman is hier niet van toepassing.
+
+WAT JE WEL KAN TESTEN:
+-----------------------
+
+1. HTML RESPONSE TEST (/)
+   Methode: GET
+   URL: http://localhost:5173/
+   
+   Tests:
+   - Status code is 200
+   - Content-Type bevat text/html
+   - Response body bevat HTML structuur
+   - Response body bevat "Game Ochtend Manager" (ergens in de HTML)
+   - Response body bevat 'id="root"' (React mount point)
+   
+   LET OP: Gebruik .to.include() in plaats van exact matching voor flexibiliteit:
+   
+   pm.test("Titel is aanwezig", function () {
+       pm.expect(pm.response.text()).to.include("Game Ochtend Manager");
+   });
+   
+   pm.test("React root div aanwezig", function () {
+       pm.expect(pm.response.text()).to.include('id="root"');
+   });
+   
+   pm.test("Main script aanwezig", function () {
+       pm.expect(pm.response.text()).to.include("/src/main.tsx");
+   });
+
+2. STATIC ASSETS TEST
+   Methode: GET
+   URLs:
+   - http://localhost:5173/src/main.tsx
+   - http://localhost:5173/src/main.css
+   - http://localhost:5173/src/App.tsx
+   
+   Tests:
+   - Status code is 200
+   - Response body is niet leeg
+   - Response time < 500ms (redelijk voor dev server)
+
+3. 404 ERROR TEST
+   Methode: GET
+   URL: http://localhost:5173/deze-bestaat-niet
+   
+   Tests:
+   - Status code is 404
+   - Response body bevat error informatie
+
+4. FONT RESOURCES TEST
+   Methode: GET
+   URL: https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap
+   
+   Tests:
+   - Status code is 200
+   - Content-Type bevat css
+
+
+WAAROM TRADITIONELE API TESTING NIET WERKT:
+--------------------------------------------
+
+Deze app heeft GEEN backend API endpoints zoals:
+- /api/users
+- /api/groups
+- /api/login
+- etc.
+
+Alle functionaliteit (login, groepen, uitnodigingen, etc.) draait volledig in de browser.
+Data wordt opgeslagen in browser localStorage via Spark's KV systeem.
+
+
+ALTERNATIEVE TEST METHODES:
+----------------------------
+
+1. E2E TESTING (Aanbevolen)
+   Tools: Playwright, Cypress, Selenium
+   - Test volledige gebruikersflows
+   - Test UI interacties
+   - Test data persistentie
+
+2. UNIT/INTEGRATION TESTING
+   Tools: Vitest, React Testing Library (al geïnstalleerd)
+   - Test individuele componenten
+   - Test React hooks
+   - Test state management
+
+3. VISUAL REGRESSION TESTING
+   Tools: Percy, Chromatic
+   - Test of UI er goed uitziet
+   - Detecteer ongewenste visuele veranderingen
+
+
+VOORBEELD E2E TEST SCENARIO'S (VOOR PLAYWRIGHT/CYPRESS):
+---------------------------------------------------------
+
+Scenario 1: Gebruiker Registratie & Login
+1. Open http://localhost:5173/
+2. Vul username in: "testuser"
+3. Vul email in: "test@example.com"
+4. Vul wachtwoord in: "password123"
+5. Klik "Registreren"
+6. Verifieer dat hoofdscherm wordt getoond
+7. Log uit
+8. Log opnieuw in met dezelfde credentials
+9. Verifieer dat login succesvol is
+
+Scenario 2: Groep Aanmaken & Beheren
+1. Log in als gebruiker
+2. Klik op "Nieuwe Groep" knop
+3. Vul groepsnaam in: "Test Groep"
+4. Voeg deelnemer toe: "Jan"
+5. Verifieer dat groep in sidebar verschijnt
+6. Klik op groep
+7. Verifieer dat deelnemer "Jan" zichtbaar is
+
+Scenario 3: Checklist Functionaliteit
+1. Log in en selecteer groep
+2. Ga naar Checklist tab
+3. Voeg item toe: "Breng spelletjes mee"
+4. Vink item aan als voltooid
+5. Verifieer dat item als voltooid wordt gemarkeerd
+6. Refresh pagina
+7. Verifieer dat item nog steeds voltooid is
+
+Scenario 4: Uitnodigingen
+1. Log in als gebruiker A
+2. Maak groep aan
+3. Nodig gebruiker B uit
+4. Log uit
+5. Log in als gebruiker B
+6. Ga naar profiel
+7. Verifieer dat uitnodiging zichtbaar is
+8. Accepteer uitnodiging
+9. Verifieer dat groep nu in sidebar staat
+
+
+POSTMAN COLLECTION VOORBEELD:
+------------------------------
+
+Maak een collection met deze requests:
+
+Request 1: "Load Home Page"
+- GET http://localhost:5173/
+- Test: pm.expect(pm.response.code).to.eql(200)
+
+Request 2: "Load Main CSS"
+- GET http://localhost:5173/src/main.css
+- Test: pm.expect(pm.response.code).to.eql(200)
+
+Request 3: "Load Main TSX"
+- GET http://localhost:5173/src/main.tsx
+- Test: pm.expect(pm.response.code).to.eql(200)
+
+Request 4: "Test 404"
+- GET http://localhost:5173/niet-bestaand
+- Test: pm.expect(pm.response.code).to.eql(404)
+
+
+CONCLUSIE:
+----------
+
+Voor deze specifieke app is Postman niet het juiste tool voor functioneel testen.
+Gebruik Postman alleen voor basis checks (HTML laden, assets beschikbaar, etc.).
+
+Voor echte functionaliteit testing:
+→ Gebruik E2E testing tools zoals Playwright of Cypress
+→ Dit laat je toe om login, groepen, uitnodigingen, etc. te testen
+→ Simuleert echte gebruikerservaringen in de browser
